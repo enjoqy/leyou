@@ -1,0 +1,28 @@
+# 商品的微服务
+
+server:
+  port: 8081
+spring:
+  application:
+    name: item-service
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql:///leyou
+    username: root
+    password: 1234
+  rabbitmq:  # 消息队列配置，生产方
+    host: 192.168.76.128
+    virtual-host: /leyou
+    username: leyou
+    password: leyou
+    template:  # 默认使用的交换机
+      exchange: LEYOU.ITEM.EXCHANGE
+eureka:  # 注册中心配置
+  client:
+    service-url:
+      defaultZone: http://localhost:10086/eureka
+  instance:
+    lease-renewal-interval-in-seconds: 5  # 心跳检测
+    lease-expiration-duration-in-seconds: 15  # 超时等待
+mybatis:
+  type-aliases-package: org.junhi.item.pojo
