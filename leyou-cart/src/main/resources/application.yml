@@ -1,20 +1,19 @@
 server:
-  port: 8087
+  port: 8088
 spring:
   application:
-    name: auth-service
+    name: cart-service
+  redis:
+    host: 192.168.76.128
 eureka:
   client:
     service-url:
       defaultZone: http://127.0.0.1:10086/eureka
-    registry-fetch-interval-seconds: 10  # 服务的拉取时间
+    registry-fetch-interval-seconds: 10  # 拉取服务的时间
   instance:
     lease-renewal-interval-in-seconds: 5  # 心跳
     lease-expiration-duration-in-seconds: 15  # 过期
-leyou:
+leyou:  # 用于解析token，并进行拦截
   jwt:
-    secret: leyou@Login(Auth}*^31)&heiMa% # 登录校验的密钥
     pubKeyPath: H:\\JavaTmpFile\\rsa\\rsa.pub # 公钥地址
-    priKeyPath: H:\\JavaTmpFile\\rsa\\rsa.pri # 私钥地址
-    expire: 30 # 过期时间,单位分钟
     cookieName: LY_TOKEN

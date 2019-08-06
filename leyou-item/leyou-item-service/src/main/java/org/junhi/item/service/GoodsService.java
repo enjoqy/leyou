@@ -229,4 +229,13 @@ public class GoodsService {
     public Spu querySpuById(Long id) {
         return this.spuMapper.selectByPrimaryKey(id);
     }
+
+    /**
+     * 根据id查询sku
+     * @param skuId
+     * @return
+     */
+    public Sku querySkuBySkuId(Long skuId) {
+        return this.skuMapper.selectByPrimaryKey(skuId);
+    }
 }

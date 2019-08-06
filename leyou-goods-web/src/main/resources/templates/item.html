@@ -212,16 +212,17 @@
                                 <div class="control-group">
                                     <div class="controls">
                                         <input autocomplete="off" type="text" disabled value="1" minnum="1"
+                                               v-model="num"
                                                class="itxt"/>
-                                        <a href="javascript:void(0)" class="increment plus">+</a>
-                                        <a href="javascript:void(0)" class="increment mins">-</a>
+                                        <a href="javascript:void(0)" class="increment plus" @click="incr()">+</a>
+                                        <a href="javascript:void(0)" class="increment mins" @click="decr()">-</a>
                                     </div>
                                 </div>
                             </div>
                             <div class="fl">
                                 <ul class="btn-choose unstyled">
                                     <li>
-                                        <a href="success-cart.html" target="_blank"
+                                        <a href="javascript:void(0)" target="_blank" @click="addCart()"
                                            class="sui-btn  btn-danger addshopcar">加入购物车</a>
                                     </li>
                                 </ul>
@@ -469,7 +470,8 @@
                                         <h3>{{group.name}}</h3>
                                         <dl>
                                             <div v-for="p in group.params">
-                                                <dt>{{p.name}}</dt><dd>{{p.v + (p.unit || '')}}</dd>
+                                                <dt>{{p.name}}</dt>
+                                                <dd>{{p.v + (p.unit || '')}}</dd>
                                             </div>
                                         </dl>
                                     </div>
@@ -663,7 +665,8 @@
                 specialSpec,
                 genericSpec,
                 paramMap,
-                indexes
+                indexes,
+                num: 1
             },
             computed: {
                 sku() {
@@ -676,10 +679,10 @@
                 groups() {
                     groups.forEach(group => {
                         group.params.forEach(param => {
-                            if(param.generic){
+                            if (param.generic) {
                                 // 通用属性，去spu的genericSpec中获取
                                 param.v = this.genericSpec[param.id] || '其它';
-                            }else{
+                            } else {
                                 // 特有属性值，去SKU中获取
                                 param.v = JSON.parse(this.sku.ownSpec)[param.id]
                             }
@@ -688,6 +691,50 @@
                     return groups;
                 }
             },
+            methods: {
+                addCart(){
+                    //判断有没有登录
+                    ly.verify().then(res => {
+                        //登录
+                        ly.http.post("/cart", {skuId: this.sku.id, num: this.num}).then(res => {
+                            window.location = "http://www.leyou.com/cart.html";
+                        }).catch(() => {
+                            alert("11111");
+                        });
+                    }).catch(() => {
+                        //未登录，保存到localstorage
+                        //先查询购物车
+                        let carts = ly.store.get("LY_CART") || [];
+                        let cart = carts.find(cart => cart.skuId == this.sku.id);
+                        if(cart){
+                            //如果购物车中有该商品的记录，更新数量
+                            cart.num += this.num;
+                        }else {
+                            //如果没有新增购物记录
+                            carts.push({
+                                num: this.num,
+                                skuId: this.sku.id,
+                                image: this.images[0],
+                                title: this.sku.title,
+                                ownSpec: this.sku.ownSpec,
+                                price: this.sku.price
+                            })
+                        }
+                        ly.store.set("LY_CART", carts);
+                        window.location = "http://www.leyou.com/cart.html";
+                    });
+                },
+                incr(){
+                    this.num++;
+                },
+                decr(){
+                    if(this.num > 1){
+                        this.num--;
+                    }
+                }
+
+            },
+
             components: {
                 lyTop: () => import('/js/pages/top.js')
             }
